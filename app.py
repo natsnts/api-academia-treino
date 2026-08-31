@@ -1,10 +1,10 @@
 """
-API REST de Produtos de Academia
+API REST de Sistema de Academia
 Tema: Academia (de treino/musculação)
-Produto: Itens vendidos na loja da academia (suplementos, equipamentos, acessórios)
+Recurso: Planos de treino oferecidos pela academia
 
 Rotas:
-    GET  /api/produtos   -> lista todos os produtos cadastrados
+    GET  /api/planos-treino   -> lista todos os planos de treino cadastrados
 
 Como executar:
     Veja o README.md
@@ -15,43 +15,47 @@ from flask import Flask, jsonify
 app = Flask(__name__)
 
 # "Banco de dados" em memória, apenas para fins didáticos.
-# Cada item representa um produto vendido na loja da academia.
-produtos = [
+# Cada item representa um plano de treino oferecido pela academia.
+planos_treino = [
     {
         "id": 1,
-        "nome": "Whey Protein Concentrado 900g",
-        "categoria": "Suplemento",
-        "marca": "MaxTitanium",
-        "preco": 129.90,
+        "nome": "Hipertrofia Iniciante",
+        "objetivo": "Hipertrofia",
+        "nivel": "Iniciante",
+        "duracao_semanas": 8,
+        "dias_por_semana": 3,
     },
     {
         "id": 2,
-        "nome": "Luvas de Treino em Couro",
-        "categoria": "Acessório",
-        "marca": "Nike",
-        "preco": 59.90,
+        "nome": "Emagrecimento Funcional",
+        "objetivo": "Emagrecimento",
+        "nivel": "Intermediário",
+        "duracao_semanas": 12,
+        "dias_por_semana": 4,
     },
     {
         "id": 3,
-        "nome": "Kit Halteres Emborrachados 2x5kg",
-        "categoria": "Equipamento",
-        "marca": "Reebok",
-        "preco": 189.90,
+        "nome": "Força e Powerlifting",
+        "objetivo": "Ganho de força",
+        "nivel": "Avançado",
+        "duracao_semanas": 16,
+        "dias_por_semana": 5,
     },
     {
         "id": 4,
-        "nome": "Creatina Monohidratada 300g",
-        "categoria": "Suplemento",
-        "marca": "Growth",
-        "preco": 79.90,
+        "nome": "Condicionamento Geral",
+        "objetivo": "Condicionamento físico",
+        "nivel": "Iniciante",
+        "duracao_semanas": 6,
+        "dias_por_semana": 2,
     },
 ]
 
 
-@app.route("/api/produtos", methods=["GET"])
-def listar_produtos():
-    """Retorna a lista completa de produtos cadastrados."""
-    return jsonify(produtos), 200
+@app.route("/api/planos-treino", methods=["GET"])
+def listar_planos_treino():
+    """Retorna a lista completa de planos de treino cadastrados."""
+    return jsonify(planos_treino), 200
 
 
 if __name__ == "__main__":

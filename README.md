@@ -1,17 +1,17 @@
-# API REST de Produtos de Academia
+# API REST de Sistema de Academia
 
 Trabalho da disciplina — tema **Academia (de treino)**. A API expõe os
-produtos vendidos na loja de uma academia (suplementos, equipamentos e
-acessórios), por analogia ao exemplo de filmes proposto no enunciado.
+planos de treino oferecidos pela academia, por analogia ao exemplo de
+filmes proposto no enunciado.
 
 ## Rota implementada (Parte 1)
 
-| Método | Rota            | Descrição                            |
-|--------|-----------------|----------------------------------------|
-| GET    | `/api/produtos` | Retorna a lista de produtos cadastrados |
+| Método | Rota                | Descrição                                  |
+|--------|---------------------|----------------------------------------------|
+| GET    | `/api/planos-treino`| Retorna a lista de planos de treino cadastrados |
 
-> A rota `POST /api/produtos` (cadastro de um novo produto) é a próxima
-> feature planejada, conforme o fluxo de trabalho descrito abaixo.
+> A rota `POST /api/planos-treino` (cadastro de um novo plano de treino) é a
+> próxima feature planejada, conforme o fluxo de trabalho descrito abaixo.
 
 ## Como executar
 
@@ -37,7 +37,7 @@ A API sobe em `http://localhost:8080`.
 ### Testando a rota
 
 ```bash
-curl http://localhost:8080/api/produtos
+curl http://localhost:8080/api/planos-treino
 ```
 
 Resposta esperada (200 OK):
@@ -46,10 +46,11 @@ Resposta esperada (200 OK):
 [
   {
     "id": 1,
-    "nome": "Whey Protein Concentrado 900g",
-    "categoria": "Suplemento",
-    "marca": "MaxTitanium",
-    "preco": 129.90
+    "nome": "Hipertrofia Iniciante",
+    "objetivo": "Hipertrofia",
+    "nivel": "Iniciante",
+    "duracao_semanas": 8,
+    "dias_por_semana": 3
   },
   ...
 ]
@@ -62,7 +63,8 @@ Workflow** (variação simplificada do GitHub Flow):
 
 - A branch `main` sempre reflete uma versão estável e funcional da API.
 - Cada nova funcionalidade é desenvolvida em uma branch separada, nomeada a
-  partir da feature (ex.: `feature/post-produtos` para a rota de cadastro).
+  partir da feature (ex.: `feature/post-planos-treino` para a rota de
+  cadastro).
 - Ao concluir a feature, é aberto um Pull Request da branch de feature para a
   `main`, permitindo revisão de código pela outra pessoa da dupla antes do
   merge.
@@ -78,8 +80,8 @@ prazo de um trabalho acadêmico com apenas duas pessoas e poucas features.
 ## Estrutura do projeto
 
 ```
-api-academica/
-├── app.py            # aplicação Flask com a rota GET /api/produtos
+api-academia/
+├── app.py            # aplicação Flask com a rota GET /api/planos-treino
 ├── requirements.txt  # dependências
 ├── .gitignore
 └── README.md
@@ -87,8 +89,8 @@ api-academica/
 
 ## Próximos passos (feature em branch separada)
 
-- [ ] Criar branch `feature/post-produtos`
-- [ ] Implementar `POST /api/produtos` para cadastrar um novo produto
-- [ ] Validar payload (nome, categoria, marca, preço)
+- [ ] Criar branch `feature/post-planos-treino`
+- [ ] Implementar `POST /api/planos-treino` para cadastrar um novo plano
+- [ ] Validar payload (nome, objetivo, nível, duração, dias por semana)
 - [ ] Abrir Pull Request para `main`
 - [ ] Atualizar este README com a nova rota

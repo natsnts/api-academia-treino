@@ -4,18 +4,18 @@ Tema: Academia (de treino/musculação)
 Recurso: Planos de treino oferecidos pela academia
 
 Rotas:
-    GET  /api/planos-treino   -> lista todos os planos de treino cadastrados
+    GET   /api/planos-treino   -> lista todos os planos de treino cadastrados
+    POST  /api/planos-treino   -> cadastra um novo plano de treino
 
 Como executar:
     Veja o README.md
 """
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
 # "Banco de dados" em memória, apenas para fins didáticos.
-# Cada item representa um plano de treino oferecido pela academia.
 planos_treino = [
     {
         "id": 1,
@@ -58,6 +58,34 @@ def listar_planos_treino():
     return jsonify(planos_treino), 200
 
 
+@app.route("/api/planos-treino", methods=["POST"])
+def cadastrar_plano():
+    """Cadastra um novo plano de treino."""
+    dados = request.get_json()
+
+    if not dados:
+        return jsonify({"erro": "Nenhum dado enviado"}), 400
+
+    campos_obrigatorios = ["nome", "objetivo", "nivel", "duracao_semanas", "dias_por_semana"]
+
+    for campo in campos_obrigatorios:
+        if campo not in dados or dados[campo] is None:
+            return jsonify({"erro": f"O campo '{campo}' é obrigatório"}), 400
+
+    novo_plano = {
+        "id": len(planos_treino) + 1,
+        "nome": dados["nome"],
+        "objetivo": dados["objetivo"],
+        "nivel": dados["nivel"],
+        "duracao_semanas": dados["duracao_semanas"],
+        "dias_por_semana": dados["dias_por_semana"],
+    }
+
+    planos_treino.append(novo_plano)
+
+    return jsonify(novo_plano), 201
+
+
 if __name__ == "__main__":
-    # host=0.0.0.0 para permitir acesso de fora do container/máquina, se necessário
+    # Mantém a porta 8080 configurada
     app.run(host="0.0.0.0", port=8080, debug=True)

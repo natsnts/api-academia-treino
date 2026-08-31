@@ -1,6 +1,5 @@
 # API REST de Sistema de Academia
-
-Trabalho da disciplina — tema **Academia (de treino)**. A API expõe os
+A API expõe os
 planos de treino oferecidos pela academia, por analogia ao exemplo de
 filmes proposto no enunciado.
 

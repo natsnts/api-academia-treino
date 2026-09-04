@@ -1,0 +1,26 @@
+version: 2.1
+
+jobs:
+  test:
+    docker:
+      - image: cimg/python:3.12
+    steps:
+      - checkout
+
+      - run:
+          name: Instalar dependências
+          command: |
+            pip install -r requirements.txt
+            pip install pytest
+
+      - run:
+          name: Rodar testes automatizados
+          command: pytest -v --junitxml=test-results/junit.xml
+
+      - store_test_results:
+          path: test-results
+
+workflows:
+  build_and_test:
+    jobs:
+      - test

@@ -20,7 +20,7 @@ def client():
 
 def test_listar_planos_treino_retorna_200(client):
     resposta = client.get("/api/planos-treino")
-    assert resposta.status_code == 
+    assert resposta.status_code == 999
 
 
 def test_listar_planos_treino_retorna_lista(client):

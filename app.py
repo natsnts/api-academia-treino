@@ -4,8 +4,8 @@ Tema: Academia (de treino/musculação)
 Recurso: Planos de treino oferecidos pela academia
 
 Rotas:
-    GET   /api/planos-treino   -> lista todos os planos de treino cadastrados
-    POST  /api/planos-treino   -> cadastra um novo plano de treino
+    GET  /api/planos-treino   -> lista todos os planos de treino cadastrados
+    POST /api/planos-treino   -> cadastra um novo plano de treino
 
 Como executar:
     Veja o README.md
@@ -16,6 +16,7 @@ from flask import Flask, jsonify, request
 app = Flask(__name__)
 
 # "Banco de dados" em memória, apenas para fins didáticos.
+# Cada item representa um plano de treino oferecido pela academia.
 planos_treino = [
     {
         "id": 1,
@@ -51,6 +52,8 @@ planos_treino = [
     },
 ]
 
+CAMPOS_OBRIGATORIOS = ["nome", "objetivo", "nivel", "duracao_semanas", "dias_por_semana"]
+
 
 @app.route("/api/planos-treino", methods=["GET"])
 def listar_planos_treino():
@@ -59,33 +62,31 @@ def listar_planos_treino():
 
 
 @app.route("/api/planos-treino", methods=["POST"])
-def cadastrar_plano():
-    """Cadastra um novo plano de treino."""
-    dados = request.get_json()
+def cadastrar_plano_treino():
+    """Cadastra um novo plano de treino a partir do corpo JSON da requisição."""
+    dados = request.get_json(silent=True)
 
     if not dados:
-        return jsonify({"erro": "Nenhum dado enviado"}), 400
+        return jsonify({"erro": "Corpo da requisição vazio ou inválido"}), 400
 
-    campos_obrigatorios = ["nome", "objetivo", "nivel", "duracao_semanas", "dias_por_semana"]
-
-    for campo in campos_obrigatorios:
-        if campo not in dados or dados[campo] is None:
+    for campo in CAMPOS_OBRIGATORIOS:
+        if dados.get(campo) in (None, ""):
             return jsonify({"erro": f"O campo '{campo}' é obrigatório"}), 400
 
+    novo_id = max((p["id"] for p in planos_treino), default=0) + 1
     novo_plano = {
-        "id": len(planos_treino) + 1,
+        "id": novo_id,
         "nome": dados["nome"],
         "objetivo": dados["objetivo"],
         "nivel": dados["nivel"],
         "duracao_semanas": dados["duracao_semanas"],
         "dias_por_semana": dados["dias_por_semana"],
     }
-
     planos_treino.append(novo_plano)
 
     return jsonify(novo_plano), 201
 
 
-if __name__ == "__main__":
-    # Mantém a porta 8080 configurada
+if __name__ == "__main__":  # pragma: no cover
+    # host=0.0.0.0 para permitir acesso de fora do container/máquina, se necessário
     app.run(host="0.0.0.0", port=8080, debug=True)

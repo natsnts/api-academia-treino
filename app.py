@@ -81,10 +81,22 @@ def cadastrar_plano():
         "dias_por_semana": dados["dias_por_semana"],
     }
 
+
     planos_treino.append(novo_plano)
 
     return jsonify(novo_plano), 201
 
+@app.route("/api/planos-treino/<int:id>", methods=["DELETE"])
+def remover_plano(id):
+    global planos_treino
+    plano = next((p for p in planos_treino if p["id"] == id), None)
+
+    if plano is None:
+        return jsonify({"erro": "Plano de treino não encontrado"}), 404
+
+    planos_treino = [p for p in planos_treino if p["id"] != id]
+    
+    return '', 204
 
 if __name__ == "__main__":
     # Mantém a porta 8080 configurada

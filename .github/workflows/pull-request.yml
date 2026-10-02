@@ -1,35 +1,28 @@
-name: CI - Pull Request
+name: CI Pull Request
 
 on:
   pull_request:
     branches:
       - main
-    types:
-      - opened
-      - synchronize
-      - reopened
 
 jobs:
   qualidade:
-    name: Qualidade (testes, cobertura e linter)
     runs-on: ubuntu-latest
 
     steps:
-      - name: Clonar repositorio
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Instalar Python
-        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
       - name: Instalar dependencias
-        run: pip install --only-binary=:all: -r requirements.txt
+        run: pip install -r requirements.txt
 
-      - name: Rodar linter (flake8)
+      - name: Rodar linter
         run: flake8 .
 
-      - name: Rodar testes e verificar cobertura
+      - name: Rodar testes
         run: pytest --cov=app --cov-report=term-missing --cov-fail-under=90

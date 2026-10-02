@@ -11,28 +11,28 @@ on:
 
 jobs:
   sonarcloud:
-    name: Análise estática (SonarCloud)
+    name: SonarCloud analysis
     runs-on: ubuntu-latest
 
     steps:
-      - name: Clonar repositório
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Instalar Python
-        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Instalar dependências
-        run: pip install --only-binary=:all: -r requirements.txt
+      - name: Install dependencies
+        run: pip install -r requirements.txt
 
-      - name: Rodar testes e gerar relatório de cobertura
+      - name: Run tests
         run: pytest --cov=app --cov-report=xml
 
-      - name: Rodar análise do SonarCloud
-        uses: SonarSource/sonarcloud-github-action@ffc3010689be73b8e5ae0c57ce35968afd7909e8
+      - name: SonarCloud analysis
+        uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

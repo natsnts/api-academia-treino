@@ -11,9 +11,22 @@ Como executar:
     Veja o README.md
 """
 
+import os
+from typing import Optional
+
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
+
+ROTA_PLANOS_TREINO = "/api/planos-treino"
+
+CAMPOS_OBRIGATORIOS = [
+    "nome",
+    "objetivo",
+    "nivel",
+    "duracao_semanas",
+    "dias_por_semana",
+]
 
 # "Banco de dados" em memória, apenas para fins didáticos.
 # Cada item representa um plano de treino oferecido pela academia.
@@ -52,30 +65,46 @@ planos_treino = [
     },
 ]
 
-CAMPOS_OBRIGATORIOS = ["nome", "objetivo", "nivel", "duracao_semanas", "dias_por_semana"]
+
+def validar_payload(dados: Optional[dict]) -> Optional[str]:
+    """
+    Valida o corpo recebido no cadastro de um plano de treino.
+
+    Retorna a mensagem de erro (string) caso algum campo obrigatório
+    esteja ausente ou vazio, ou None se o payload for válido.
+    """
+    if not dados:
+        return "Corpo da requisição vazio ou inválido"
+
+    for campo in CAMPOS_OBRIGATORIOS:
+        if dados.get(campo) in (None, ""):
+            return f"O campo '{campo}' é obrigatório"
+
+    return None
 
 
-@app.route("/api/planos-treino", methods=["GET"])
+def proximo_id() -> int:
+    """Calcula o próximo id disponível para um novo plano de treino."""
+    return max((plano["id"] for plano in planos_treino), default=0) + 1
+
+
+@app.route(ROTA_PLANOS_TREINO, methods=["GET"])
 def listar_planos_treino():
     """Retorna a lista completa de planos de treino cadastrados."""
     return jsonify(planos_treino), 200
 
 
-@app.route("/api/planos-treino", methods=["POST"])
+@app.route(ROTA_PLANOS_TREINO, methods=["POST"])
 def cadastrar_plano_treino():
     """Cadastra um novo plano de treino a partir do corpo JSON da requisição."""
     dados = request.get_json(silent=True)
 
-    if not dados:
-        return jsonify({"erro": "Corpo da requisição vazio ou inválido"}), 400
+    erro = validar_payload(dados)
+    if erro:
+        return jsonify({"erro": erro}), 400
 
-    for campo in CAMPOS_OBRIGATORIOS:
-        if dados.get(campo) in (None, ""):
-            return jsonify({"erro": f"O campo '{campo}' é obrigatório"}), 400
-
-    novo_id = max((p["id"] for p in planos_treino), default=0) + 1
     novo_plano = {
-        "id": novo_id,
+        "id": proximo_id(),
         "nome": dados["nome"],
         "objetivo": dados["objetivo"],
         "nivel": dados["nivel"],
@@ -88,5 +117,8 @@ def cadastrar_plano_treino():
 
 
 if __name__ == "__main__":  # pragma: no cover
-    # host=0.0.0.0 para permitir acesso de fora do container/máquina, se necessário
-    app.run(host="0.0.0.0", port=8080, debug=True)
+    # Por padrão, só aceita conexões locais (mais seguro). Para rodar dentro
+    # de um container/VM e aceitar conexões externas, defina a variável de
+    # ambiente HOST=0.0.0.0 explicitamente antes de iniciar a aplicação.
+    HOST = os.environ.get("HOST", "127.0.0.1")
+    app.run(host=HOST, port=8080, debug=True)

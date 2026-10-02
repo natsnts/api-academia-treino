@@ -1,151 +1,36 @@
 # API REST de Sistema de Academia
 
-A API expõe os
-planos de treino oferecidos pela academia, por analogia ao exemplo de
-filmes proposto no enunciado.
+A API expõe os planos de treino oferecidos pela academia, por analogia ao
+exemplo de filmes proposto no enunciado.
 
-## Rota implementada (Parte 1)
+## Rotas implementadas
 
-| Método | Rota                 | Descrição                                       |
-| ------ | -------------------- | ----------------------------------------------- |
-| GET    | `/api/planos-treino` | Retorna a lista de planos de treino cadastrados |
-
-> A rota `POST /api/planos-treino` (cadastro de um novo plano de treino) é a
-> próxima feature planejada, conforme o fluxo de trabalho descrito abaixo.
+| Método | Rota                 | Descrição                               |
+| ------ | --------------------- | ----------------------------------------- |
+| GET    | `/api/planos-treino`  | Retorna a lista de planos de treino cadastrados |
+| POST   | `/api/planos-treino`  | Cadastra um novo plano de treino          |
 
 ## Como executar
 
 Pré-requisitos: Python 3.10+ instalado.
 
 ```bash
-# 1. Entre na pasta do projeto
-cd api-academica
-
-# 2. (Recomendado) crie um ambiente virtual
+cd api-academia-treino
 python -m venv venv
 source venv/bin/activate      # Windows: venv\Scripts\activate
-
-# 3. Instale as dependências
 pip install -r requirements.txt
-
-# 4. Rode a API
 python app.py
 ```
 
 A API sobe em `http://localhost:8080`.
 
-### Testando a rota
+### 1. Listar planos de treino (GET)
 
 ```bash
 curl http://localhost:8080/api/planos-treino
 ```
 
-Resposta esperada (200 OK):
-
-```json
-[
-  {
-    "id": 1,
-    "nome": "Hipertrofia Iniciante",
-    "objetivo": "Hipertrofia",
-    "nivel": "Iniciante",
-    "duracao_semanas": 8,
-    "dias_por_semana": 3
-  },
-  ...
-]
-```
-
-## Workflow de Git escolhido
-
-Como o trabalho é feito por **duas pessoas**, optamos pelo **Feature Branch
-Workflow** (variação simplificada do GitHub Flow):
-
-- A branch `main` sempre reflete uma versão estável e funcional da API.
-- Cada nova funcionalidade é desenvolvida em uma branch separada, nomeada a
-  partir da feature (ex.: `feature/post-planos-treino` para a rota de
-  cadastro).
-- Ao concluir a feature, é aberto um Pull Request da branch de feature para a
-  `main`, permitindo revisão de código pela outra pessoa da dupla antes do
-  merge.
-- Isso evita que os dois integrantes editem a `main` diretamente ao mesmo
-  tempo, reduz conflitos e cria um histórico claro de quem implementou cada
-  parte (ex.: uma pessoa cuidando do GET inicial, a outra da feature de
-  POST).
-
-Escolhemos esse fluxo em vez do Git Flow completo (com branches `develop`,
-`release`, `hotfix`, etc.) por ser mais simples e suficiente para o escopo e
-prazo de um trabalho acadêmico com apenas duas pessoas e poucas features.
-
-## Estrutura do projeto
-
-```
-api-academia/
-├── app.py            # aplicação Flask com a rota GET /api/planos-treino
-├── requirements.txt  # dependências
-├── .gitignore
-└── README.md
-```
-
-## Próximos passos (feature em branch separada)
-
-- [ ] Criar branch `feature/post-planos-treino`
-- [ ] Implementar `POST /api/planos-treino` para cadastrar um novo plano
-- [ ] Validar payload (nome, objetivo, nível, duração, dias por semana)
-- [ ] Abrir Pull Request para `main`
-- [ ] Atualizar este README com a nova rota
-
-## Rota implementada (Parte 2)
-
-| Método | Rota                 | Descrição                                       |
-| ------ | -------------------- | ----------------------------------------------- |
-| GET    | `/api/planos-treino` | Retorna a lista de planos de treino cadastrados |
-| POST   | `/api/planos-treino` | Cadastra um novo plano de treino                |
-
-## Como executar
-
-Pré-requisitos: Python 3.10+ instalado.
-
-```bash
-# 1. Entre na pasta do projeto
-cd api-academica-treino
-
-# 2. (Recomendado) crie um ambiente virtual
-python -m venv venv
-source venv/bin/activate      # Windows: venv\Scripts\activate
-
-# 3. Instale as dependências
-pip install -r requirements.txt
-
-# 4. Rode a API
-python app.py
-```
-
-A API sobe em `http://localhost:8080`.
-
-### Testando a rota
-
-```bash
-curl http://localhost:8080/api/planos-treino
-```
-
-Resposta esperada (200 OK):
-
-```json
-[
-  {
-    "id": 1,
-    "nome": "Hipertrofia Iniciante",
-    "objetivo": "Hipertrofia",
-    "nivel": "Iniciante",
-    "duracao_semanas": 8,
-    "dias_por_semana": 3
-  },
-  ...
-]
-```
-
-#### 2. Cadastrar novo plano de treino (POST)
+### 2. Cadastrar novo plano de treino (POST)
 
 ```bash
 curl -X POST http://localhost:8080/api/planos-treino \
@@ -159,64 +44,154 @@ curl -X POST http://localhost:8080/api/planos-treino \
   }'
 ```
 
-_(No Windows PowerShell, você também pode usar:)_
+Se faltar algum campo obrigatório (ou vier vazio/nulo), a API responde 400.
 
-```powershell
-Invoke-RestMethod -Uri "[http://127.0.0.1:8080/api/planos-treino](http://127.0.0.1:8080/api/planos-treino)" -Method Post -ContentType "application/json; charset=utf-8" -Body '{"nome": "Treino Hipertrofia A/B", "objetivo": "Hipertrofia", "nivel": "Intermediário", "duracao_semanas": 8, "dias_por_semana": 4}'
+## Testes automatizados
+
+```bash
+pip install -r requirements.txt
+pytest --cov=app --cov-report=term-missing
 ```
 
-Resposta esperada (201 Created):
+A cobertura mínima exigida é de **90%** (`--cov-fail-under=90` no CI).
 
-```json
-{
-  "id": 5,
-  "nome": "Treino Hipertrofia A/B",
-  "objetivo": "Hipertrofia",
-  "nivel": "Intermediário",
-  "duracao_semanas": 8,
-  "dias_por_semana": 4
-}
+## Verificação de Linter
+
+```bash
+flake8 .
 ```
 
 ## Workflow de Git escolhido
 
 Como o trabalho é feito por **duas pessoas**, optamos pelo **Feature Branch
-Workflow** (variação simplificada do GitHub Flow):
+Workflow**: a `main` sempre reflete uma versão estável, e cada
+funcionalidade nova é feita numa branch própria (`feature/...`), com
+Pull Request e revisão antes do merge.
 
-- A branch `main` sempre reflete uma versão estável e funcional da API.
-- Cada nova funcionalidade é desenvolvida em uma branch separada, nomeada a
-  partir da feature (ex.: `feature/post-planos-treino` para a rota de
-  cadastro).
-- Ao concluir a feature, é aberto um Pull Request da branch de feature para a
-  `main`, permitindo revisão de código pela outra pessoa da dupla antes do
-  merge.
-- Isso evita que os dois integrantes editem a `main` diretamente ao mesmo
-  tempo, reduz conflitos e cria um histórico claro de quem implementou cada
-  parte (ex.: uma pessoa cuidando do GET inicial, a outra da feature de
-  POST).
+## Integração Contínua (GitHub Actions)
 
-Escolhemos esse fluxo em vez do Git Flow completo (com branches `develop`,
-`release`, `hotfix`, etc.) por ser mais simples e suficiente para o escopo e
-prazo de um trabalho acadêmico com apenas duas pessoas e poucas features.
+O repositório tem workflows de CI em `.github/workflows/`:
+
+- **`commit.yml`** — dispara a cada `push`. Job **qualidade**: instala
+  Python e dependências, roda o linter (`flake8`) e os testes com
+  verificação de cobertura ≥ 90%.
+- **`pull-request.yml`** — mesmo processo, disparado a cada Pull Request
+  direcionado à `main`, servindo como gate antes do merge.
+- **`sonarcloud.yml`** — dispara a cada push na `main` e a cada Pull
+  Request. Roda os testes gerando um relatório de cobertura
+  (`coverage.xml`) e envia o código para análise estática no SonarCloud.
+
+## Análise estática (SonarCloud)
+
+O projeto está integrado ao **SonarCloud**, a versão gratuita e baseada em
+nuvem do SonarQube. A análise verifica bugs, vulnerabilidades, "code
+smells", duplicação de código e cobertura, a cada push/PR.
+
+- **Link do projeto no SonarCloud:**
+  `https://sonarcloud.io/project/overview?id=natsnts_api-academia-treino`
+  _(o link exato depende da `sonar.organization` e do `sonar.projectKey`
+  usados ao importar o repositório — veja `sonar-project.properties`)_
+
+### Como foi configurado
+
+1. Criada uma conta no [SonarCloud](https://sonarcloud.io) logando com a
+   conta do GitHub.
+2. Importada a organização e o repositório `api-academia-treino`.
+3. Gerado um token de autenticação (`SONAR_TOKEN`) e adicionado como
+   **Secret** do repositório no GitHub (Settings → Secrets and variables
+   → Actions → New repository secret).
+4. Adicionado o arquivo `sonar-project.properties` na raiz do projeto,
+   com a chave (`projectKey`) e a organização (`organization`) exatas
+   fornecidas pelo SonarCloud.
+5. Adicionado o workflow `.github/workflows/sonarcloud.yml`, que roda os
+   testes (gerando `coverage.xml`) e então executa a análise via
+   `SonarSource/sonarcloud-github-action`.
+
+### Apontamentos corrigidos
+
+Durante a integração, o código foi revisado preventivamente para evitar
+os apontamentos mais comuns de análise estática em projetos Python/Flask,
+e os apontamentos reais identificados pela primeira análise do SonarCloud
+foram corrigidos:
+
+**Correções no código (`app.py`):**
+
+- **Literal de rota duplicado**: a string `"/api/planos-treino"` estava
+  repetida nos dois decoradores de rota. Foi extraída para a constante
+  `ROTA_PLANOS_TREINO`.
+- **Função com responsabilidade dupla**: a validação dos campos
+  obrigatórios foi extraída para `validar_payload()`, uma função pura e
+  testável isoladamente, reduzindo a complexidade cognitiva da rota POST.
+- **Cálculo de id duplicado**: extraído para a função `proximo_id()`.
+- **Tipagem**: adicionados *type hints* às funções auxiliares.
+- **"Evite vincular o aplicativo a todas as interfaces de rede"**
+  (vulnerabilidade Bloqueador, regra sobre `host="0.0.0.0"` fixo no
+  código): o host agora vem de uma variável de ambiente (`HOST`), com
+  `127.0.0.1` (apenas conexões locais) como padrão seguro. Para expor a
+  API fora da máquina/container, é preciso definir `HOST=0.0.0.0`
+  explicitamente antes de rodar — uma decisão consciente, não um padrão
+  perigoso embutido no código.
+
+**Correções nos workflows (`.github/workflows/*.yml`):**
+
+- **"Utilizar dependências sem bloquear as versões resolvidas"**: as
+  actions do GitHub (`actions/checkout`, `actions/setup-python`) estavam
+  referenciadas por tag mutável (`@v4`, `@v5`). Foram fixadas (*pinned*)
+  no commit SHA exato de uma versão específica (ex.:
+  `actions/checkout@11d5960a...677262 # v4.4.0`), impedindo que uma tag
+  seja redirecionada para outro código no futuro sem revisão.
+- **"Omitir `--only-binary :all:` pode levar à execução de scripts de
+  instalação"**: o comando `pip install -r requirements.txt` passou a
+  usar a flag `--only-binary=:all:`, que impede o `pip` de instalar a
+  partir de pacotes-fonte (que podem rodar código arbitrário de
+  instalação) e força o uso apenas de pacotes pré-compilados (wheels).
+
+**Apontamento que exige revisão manual, não código (Security Hotspot):**
+
+- **"Certifique-se de que desativar a proteção CSRF seja seguro"**: essa
+  regra do Sonar (`python:S4502`) dispara sempre que detecta a criação de
+  um app Flask, pedindo para o desenvolvedor confirmar que CSRF não é um
+  risco ali. Como esta API é uma API REST stateless (sem formulários
+  HTML, sem sessão baseada em cookie), CSRF não se aplica. Esse tipo de
+  apontamento (chamado de **Security Hotspot**) não se resolve mudando
+  código — ele se resolve revisando e marcando como seguro direto no
+  dashboard do SonarCloud:
+  1. Abra o apontamento na aba **"Issues"**
+  2. Clique no menu **"Abrir"** (ou no status do hotspot)
+  3. Selecione a opção equivalente a **"Resolver como seguro"** /
+     **"Marcar como revisado: Seguro"**
+  4. Adicione um comentário explicando o motivo, por exemplo: *"API REST
+     stateless sem formulários HTML nem autenticação por cookie/sessão;
+     proteção CSRF não se aplica a este endpoint."*
+
+Qualquer apontamento adicional que o SonarCloud identificar depois dessas
+correções deve ser tratado da mesma forma: lendo a descrição da regra no
+próprio dashboard e corrigindo o trecho indicado (ou revisando/marcando
+como seguro, se for um Security Hotspot que não se aplica ao projeto).
+
+## Proteção de branches
+
+A branch `main` tem regras de proteção configuradas no GitHub (Pull
+Request obrigatório com aprovação e checagem obrigatória do CI antes do
+merge). Detalhes em [`PROTECAO_DE_BRANCHES.md`](./PROTECAO_DE_BRANCHES.md).
 
 ## Estrutura do projeto
 
 ```
-api-academia/
-├── app.py            # aplicação Flask com as rotas GET e POST /api/planos-treino
-├── requirements.txt  # dependências
+api-academia-treino/
+├── app.py
+├── requirements.txt
+├── sonar-project.properties         # configuração do SonarCloud
+├── .flake8
+├── .coveragerc
 ├── .gitignore
-└── README.md
+├── README.md
+├── PROTECAO_DE_BRANCHES.md
+├── tests/
+│   └── test_app.py
+└── .github/
+    └── workflows/
+        ├── commit.yml
+        ├── pull-request.yml
+        └── sonarcloud.yml           # análise estática no SonarCloud
 ```
-
-## Próximos passos (feature em branch separada)
-
-- [x] Criar branch feature/post-planos-treino
-
-- [x] Implementar POST /api/planos-treino para cadastrar um novo plano
-
-- [x] Validar payload (nome, objetivo, nível, duração, dias por semana)
-
-- [x] Atualizar este README com a nova rota
-
-- [x] Abrir Pull Request para main e realizar code review

@@ -1,6 +1,5 @@
 name: CI - Pull Request
 
-# Dispara a cada evento de Pull Request direcionado à main.
 on:
   pull_request:
     branches:
@@ -16,23 +15,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Clonar repositório (checkout da branch da feature)
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - name: Clonar repositorio
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Instalar Python
-        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: "3.11"
 
-      - name: Instalar dependências
-        # --only-binary=:all: evita instalar a partir de pacotes-fonte
-        # (sdist), que podem rodar scripts arbitrários de instalação
+      - name: Instalar dependencias
         run: pip install --only-binary=:all: -r requirements.txt
 
       - name: Rodar linter (flake8)
         run: flake8 .
 
-      - name: Rodar testes e verificar cobertura (mínimo 90%)
+      - name: Rodar testes e verificar cobertura
         run: pytest --cov=app --cov-report=term-missing --cov-fail-under=90

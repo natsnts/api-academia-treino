@@ -1,0 +1,10 @@
+.git
+.github
+.circleci
+.venv
+venv
+__pycache__
+*.pyc
+.coverage
+tests
+conftest.py

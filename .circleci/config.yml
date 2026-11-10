@@ -20,7 +20,21 @@ jobs:
       - store_test_results:
           path: test-results
 
+  # Constrói a imagem Docker (roda em TODAS as branches)
+  build-image:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Construir imagem Docker
+          command: docker build -t api-academia-treino:${CIRCLE_SHA1} .
+
 workflows:
   build_and_test:
     jobs:
       - test
+      - build-image:
+          requires:
+            - test

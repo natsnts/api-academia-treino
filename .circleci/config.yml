@@ -6,21 +6,59 @@ jobs:
       - image: cimg/python:3.12
     steps:
       - checkout
-
       - run:
           name: Instalar dependências
           command: |
             pip install -r requirements.txt
             pip install pytest
-
       - run:
           name: Rodar testes automatizados
           command: pytest -v --junitxml=test-results/junit.xml
-
       - store_test_results:
           path: test-results
+
+  build-image:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Construir imagem Docker localmente
+          command: docker build -t api-academia-treino:test .
+
+  # Publica a imagem no DockerHub (somente na baseline: main)
+  publish-image:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Construir imagem com as tags do DockerHub
+          command: |
+            docker build \
+              -t ${DOCKERHUB_USERNAME}/api-academia-treino:latest \
+              -t ${DOCKERHUB_USERNAME}/api-academia-treino:${CIRCLE_SHA1} .
+      - run:
+          name: Login no DockerHub
+          command: echo "${DOCKERHUB_PASSWORD}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
+      - run:
+          name: Publicar imagem no DockerHub
+          command: |
+            docker push ${DOCKERHUB_USERNAME}/api-academia-treino:latest
+            docker push ${DOCKERHUB_USERNAME}/api-academia-treino:${CIRCLE_SHA1}
 
 workflows:
   build_and_test:
     jobs:
       - test
+      - build-image:
+          requires:
+            - test
+      - publish-image:
+          requires:
+            - build-image
+          filters:
+            branches:
+              only: main

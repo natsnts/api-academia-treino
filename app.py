@@ -1,60 +1,3 @@
-"""
-API REST de Sistema de Academia
-Tema: Academia (de treino/musculação)
-Recurso: Planos de treino oferecidos pela academia
-
-Rotas:
-    GET  /api/planos-treino   -> lista todos os planos de treino cadastrados
-    POST /api/planos-treino   -> cadastra um novo plano de treino
-
-Como executar:
-    Veja o README.md
-"""
-
-from flask import Flask, jsonify, request
-
-app = Flask(__name__)
-
-# "Banco de dados" em memória, apenas para fins didáticos.
-# Cada item representa um plano de treino oferecido pela academia.
-planos_treino = [
-    {
-        "id": 1,
-        "nome": "Hipertrofia Iniciante",
-        "objetivo": "Hipertrofia",
-        "nivel": "Iniciante",
-        "duracao_semanas": 8,
-        "dias_por_semana": 3,
-    },
-    {
-        "id": 2,
-        "nome": "Emagrecimento Funcional",
-        "objetivo": "Emagrecimento",
-        "nivel": "Intermediário",
-        "duracao_semanas": 12,
-        "dias_por_semana": 4,
-    },
-    {
-        "id": 3,
-        "nome": "Força e Powerlifting",
-        "objetivo": "Ganho de força",
-        "nivel": "Avançado",
-        "duracao_semanas": 16,
-        "dias_por_semana": 5,
-    },
-    {
-        "id": 4,
-        "nome": "Condicionamento Geral",
-        "objetivo": "Condicionamento físico",
-        "nivel": "Iniciante",
-        "duracao_semanas": 6,
-        "dias_por_semana": 2,
-    },
-]
-
-CAMPOS_OBRIGATORIOS = ["nome", "objetivo", "nivel", "duracao_semanas", "dias_por_semana"]
-
-
 @app.route("/api/planos-treino", methods=["GET"])
 def listar_planos_treino():
     """Retorna a lista completa de planos de treino cadastrados."""
@@ -82,9 +25,23 @@ def cadastrar_plano_treino():
         "duracao_semanas": dados["duracao_semanas"],
         "dias_por_semana": dados["dias_por_semana"],
     }
+
     planos_treino.append(novo_plano)
 
     return jsonify(novo_plano), 201
+
+
+@app.route("/api/planos-treino/<int:id>", methods=["DELETE"])
+def remover_plano(id):
+    global planos_treino
+    plano = next((p for p in planos_treino if p["id"] == id), None)
+
+    if plano is None:
+        return jsonify({"erro": "Plano de treino não encontrado"}), 404
+
+    planos_treino = [p for p in planos_treino if p["id"] != id]
+
+    return '', 204
 
 
 if __name__ == "__main__":  # pragma: no cover

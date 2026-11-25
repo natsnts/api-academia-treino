@@ -1,101 +1,14 @@
 # API REST de Sistema de Academia
 
-A API expõe os
-planos de treino oferecidos pela academia, por analogia ao exemplo de
-filmes proposto no enunciado.
+[![Docker Pulls](https://badgen.net/docker/pulls/JamylleGeiza/api-academia-treino?icon=docker)](https://hub.docker.com/r/JamylleGeiza/api-academia-treino)
+[![Docker Image](https://badgen.net/badge/dockerhub/api-academia-treino/blue?icon=docker)](https://hub.docker.com/r/JamylleGeiza/api-academia-treino)
+[![CircleCI](https://badgen.net/circleci/github/natsnts/api-academia-treino/main)](https://app.circleci.com/pipelines/github/natsnts/api-academia-treino)
 
-## Rota implementada (Parte 1)
+🐳 **Imagem no DockerHub:** https://hub.docker.com/r/JamylleGeiza/api-academia-treino
 
-| Método | Rota                 | Descrição                                       |
-| ------ | -------------------- | ----------------------------------------------- |
-| GET    | `/api/planos-treino` | Retorna a lista de planos de treino cadastrados |
+A API expõe os planos de treino oferecidos pela academia, por analogia ao exemplo de filmes proposto no enunciado.
 
-> A rota `POST /api/planos-treino` (cadastro de um novo plano de treino) é a
-> próxima feature planejada, conforme o fluxo de trabalho descrito abaixo.
-
-## Como executar
-
-Pré-requisitos: Python 3.10+ instalado.
-
-```bash
-# 1. Entre na pasta do projeto
-cd api-academica
-
-# 2. (Recomendado) crie um ambiente virtual
-python -m venv venv
-source venv/bin/activate      # Windows: venv\Scripts\activate
-
-# 3. Instale as dependências
-pip install -r requirements.txt
-
-# 4. Rode a API
-python app.py
-```
-
-A API sobe em `http://localhost:8080`.
-
-### Testando a rota
-
-```bash
-curl http://localhost:8080/api/planos-treino
-```
-
-Resposta esperada (200 OK):
-
-```json
-[
-  {
-    "id": 1,
-    "nome": "Hipertrofia Iniciante",
-    "objetivo": "Hipertrofia",
-    "nivel": "Iniciante",
-    "duracao_semanas": 8,
-    "dias_por_semana": 3
-  },
-  ...
-]
-```
-
-## Workflow de Git escolhido
-
-Como o trabalho é feito por **duas pessoas**, optamos pelo **Feature Branch
-Workflow** (variação simplificada do GitHub Flow):
-
-- A branch `main` sempre reflete uma versão estável e funcional da API.
-- Cada nova funcionalidade é desenvolvida em uma branch separada, nomeada a
-  partir da feature (ex.: `feature/post-planos-treino` para a rota de
-  cadastro).
-- Ao concluir a feature, é aberto um Pull Request da branch de feature para a
-  `main`, permitindo revisão de código pela outra pessoa da dupla antes do
-  merge.
-- Isso evita que os dois integrantes editem a `main` diretamente ao mesmo
-  tempo, reduz conflitos e cria um histórico claro de quem implementou cada
-  parte (ex.: uma pessoa cuidando do GET inicial, a outra da feature de
-  POST).
-
-Escolhemos esse fluxo em vez do Git Flow completo (com branches `develop`,
-`release`, `hotfix`, etc.) por ser mais simples e suficiente para o escopo e
-prazo de um trabalho acadêmico com apenas duas pessoas e poucas features.
-
-## Estrutura do projeto
-
-```
-api-academia/
-├── app.py            # aplicação Flask com a rota GET /api/planos-treino
-├── requirements.txt  # dependências
-├── .gitignore
-└── README.md
-```
-
-## Próximos passos (feature em branch separada)
-
-- [ ] Criar branch `feature/post-planos-treino`
-- [ ] Implementar `POST /api/planos-treino` para cadastrar um novo plano
-- [ ] Validar payload (nome, objetivo, nível, duração, dias por semana)
-- [ ] Abrir Pull Request para `main`
-- [ ] Atualizar este README com a nova rota
-
-## Rota implementada (Parte 2)
+## Rotas implementadas
 
 | Método | Rota                 | Descrição                                       |
 | ------ | -------------------- | ----------------------------------------------- |
@@ -108,7 +21,7 @@ Pré-requisitos: Python 3.10+ instalado.
 
 ```bash
 # 1. Entre na pasta do projeto
-cd api-academica-treino
+cd api-academia-treino
 
 # 2. (Recomendado) crie um ambiente virtual
 python -m venv venv
@@ -123,7 +36,24 @@ python app.py
 
 A API sobe em `http://localhost:8080`.
 
-### Testando a rota
+## Executar com Docker
+
+A imagem é publicada automaticamente no DockerHub a cada mudança na `main`:
+
+```bash
+docker run -p 8080:8080 JamylleGeiza/api-academia-treino:latest
+```
+
+Para construir a imagem localmente:
+
+```bash
+docker build -t api-academia-treino .
+docker run -p 8080:8080 api-academia-treino
+```
+
+## Testando as rotas
+
+### 1. Listar planos de treino (GET)
 
 ```bash
 curl http://localhost:8080/api/planos-treino
@@ -141,11 +71,34 @@ Resposta esperada (200 OK):
     "duracao_semanas": 8,
     "dias_por_semana": 3
   },
-  ...
+  {
+    "id": 2,
+    "nome": "Emagrecimento Funcional",
+    "objetivo": "Emagrecimento",
+    "nivel": "Intermediário",
+    "duracao_semanas": 12,
+    "dias_por_semana": 4
+  },
+  {
+    "id": 3,
+    "nome": "Força e Powerlifting",
+    "objetivo": "Ganho de força",
+    "nivel": "Avançado",
+    "duracao_semanas": 16,
+    "dias_por_semana": 5
+  },
+  {
+    "id": 4,
+    "nome": "Condicionamento Geral",
+    "objetivo": "Condicionamento físico",
+    "nivel": "Iniciante",
+    "duracao_semanas": 6,
+    "dias_por_semana": 2
+  }
 ]
 ```
 
-#### 2. Cadastrar novo plano de treino (POST)
+### 2. Cadastrar novo plano de treino (POST)
 
 ```bash
 curl -X POST http://localhost:8080/api/planos-treino \
@@ -159,10 +112,10 @@ curl -X POST http://localhost:8080/api/planos-treino \
   }'
 ```
 
-_(No Windows PowerShell, você também pode usar:)_
+No Windows PowerShell, você também pode usar:
 
 ```powershell
-Invoke-RestMethod -Uri "[http://127.0.0.1:8080/api/planos-treino](http://127.0.0.1:8080/api/planos-treino)" -Method Post -ContentType "application/json; charset=utf-8" -Body '{"nome": "Treino Hipertrofia A/B", "objetivo": "Hipertrofia", "nivel": "Intermediário", "duracao_semanas": 8, "dias_por_semana": 4}'
+Invoke-RestMethod -Uri "http://127.0.0.1:8080/api/planos-treino" -Method Post -ContentType "application/json; charset=utf-8" -Body '{"nome": "Treino Hipertrofia A/B", "objetivo": "Hipertrofia", "nivel": "Intermediário", "duracao_semanas": 8, "dias_por_semana": 4}'
 ```
 
 Resposta esperada (201 Created):
@@ -178,6 +131,20 @@ Resposta esperada (201 Created):
 }
 ```
 
+Se algum campo obrigatório estiver faltando, a API responde `400 Bad Request` com uma mensagem de erro.
+
+## Pipeline de CI/CD (CircleCI)
+
+O workflow `build_and_test`, definido em `.circleci/config.yml`, possui três jobs:
+
+| Job             | O que faz                                                      | Quando executa                                       |
+| --------------- | -------------------------------------------------------------- | ---------------------------------------------------- |
+| `test`          | Instala as dependências e roda os testes automatizados         | Em todas as branches                                 |
+| `build-image`   | Constrói a imagem Docker da API                                | Em todas as branches, depois do `test`               |
+| `publish-image` | Publica a imagem no DockerHub (tags `latest` e hash do commit) | Apenas na `main` (baseline), depois do `build-image` |
+
+O `publish-image` usa as variáveis de ambiente `DOCKERHUB_USERNAME` e `DOCKERHUB_PASSWORD` (token de acesso), cadastradas no projeto do CircleCI.
+
 ## Workflow de Git escolhido
 
 Como o trabalho é feito por **duas pessoas**, optamos pelo **Feature Branch
@@ -192,8 +159,7 @@ Workflow** (variação simplificada do GitHub Flow):
   merge.
 - Isso evita que os dois integrantes editem a `main` diretamente ao mesmo
   tempo, reduz conflitos e cria um histórico claro de quem implementou cada
-  parte (ex.: uma pessoa cuidando do GET inicial, a outra da feature de
-  POST).
+  parte.
 
 Escolhemos esse fluxo em vez do Git Flow completo (com branches `develop`,
 `release`, `hotfix`, etc.) por ser mais simples e suficiente para o escopo e
@@ -202,21 +168,23 @@ prazo de um trabalho acadêmico com apenas duas pessoas e poucas features.
 ## Estrutura do projeto
 
 ```
-api-academia/
+api-academia-treino/
+├── .circleci/
+│   └── config.yml    # pipeline de CI/CD (testes, build e publicação da imagem)
+├── tests/            # testes automatizados
 ├── app.py            # aplicação Flask com as rotas GET e POST /api/planos-treino
-├── requirements.txt  # dependências
+├── Dockerfile        # configuração da imagem Docker
+├── requirements.txt  # dependências do projeto
 ├── .gitignore
 └── README.md
 ```
 
-## Próximos passos (feature em branch separada)
+## Checklist das features
 
-- [x] Criar branch feature/post-planos-treino
-
-- [x] Implementar POST /api/planos-treino para cadastrar um novo plano
-
+- [x] Criar branch `feature/post-planos-treino`
+- [x] Implementar `POST /api/planos-treino` para cadastrar um novo plano
 - [x] Validar payload (nome, objetivo, nível, duração, dias por semana)
-
 - [x] Atualizar este README com a nova rota
-
-- [x] Abrir Pull Request para main e realizar code review
+- [x] Abrir Pull Request para `main` e realizar code review
+- [x] Configurar pipeline do CircleCI para testes e build da imagem Docker
+- [x] Configurar job de publicação automática da imagem no DockerHub
